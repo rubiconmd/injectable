@@ -5,6 +5,8 @@ require 'injectable/dependencies_proxy'
 require 'injectable/dependency'
 require 'injectable/instance_methods'
 require 'injectable/missing_dependencies_exception'
+require 'active_support'
+require 'active_support/core_ext'
 
 # Convert your class into an injectable service
 #
