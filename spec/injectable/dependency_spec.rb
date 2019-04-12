@@ -1,4 +1,4 @@
-describe Injectable::Dependency, 'instance' do
+RSpec.describe Injectable::Dependency, 'instance' do
   let(:name) { 'my_dependency' }
   let(:options) { { name: name } }
   let(:described_instance) { described_class.new(options) }

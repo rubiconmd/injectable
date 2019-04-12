@@ -1,4 +1,4 @@
-describe Injectable::DependenciesGraph, '#resolve' do
+RSpec.describe Injectable::DependenciesGraph, '#resolve' do
   let(:graph) { described_class.new }
 
   context 'when depending on a dependency not declared' do

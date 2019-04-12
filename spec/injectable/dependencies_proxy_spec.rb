@@ -1,4 +1,4 @@
-describe Injectable::DependenciesProxy, '#get' do
+RSpec.describe Injectable::DependenciesProxy, '#get' do
   let(:graph) do
     Injectable::DependenciesProxy.new(
       dependency: dependency,
