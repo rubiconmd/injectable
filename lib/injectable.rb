@@ -57,8 +57,6 @@ require 'active_support/core_ext'
 #
 #   AddPlayerToTeamRoster.call(player_id: player.id, team_id: team.id)
 module Injectable
-  class Error < StandardError; end
-
   def self.included(base)
     base.extend(Injectable::ClassMethods)
     base.prepend(Injectable::InstanceMethods)
