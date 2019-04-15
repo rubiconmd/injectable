@@ -1,4 +1,4 @@
-RSpec.describe Injectable do
+describe Injectable do
   context 'without defined #call' do
     subject do
       Class.new do
