@@ -13,10 +13,10 @@ describe Injectable::DependenciesGraph, '#resolve' do
   end
 
   context '#proxy' do
-    let(:proxy_class) { stub('Proxy class') }
-    let(:proxy) { stub('Proxy instance') }
-    let(:dependency_class) { stub('Dependency class') }
-    let(:dependency) { stub('Dependency instance') }
+    let(:proxy_class) { double('Proxy class') }
+    let(:proxy) { double('Proxy instance') }
+    let(:dependency_class) { double('Dependency class') }
+    let(:dependency) { double('Dependency instance') }
     let(:graph) do
       described_class.new(proxy_class: proxy_class, dependency_class: dependency_class)
     end
@@ -25,8 +25,8 @@ describe Injectable::DependenciesGraph, '#resolve' do
     let(:options) { { name: name, depends_on: [] } }
 
     before do
-      dependency_class.stubs(:new).with(options).returns(dependency)
-      proxy_class.stubs(:new).with(name => dependency).returns(proxy)
+      allow(dependency_class).to receive(:new).with(options).and_return(dependency)
+      allow(proxy_class).to receive(:new).with(name => dependency).and_return(proxy)
       graph.add(options)
     end
 
