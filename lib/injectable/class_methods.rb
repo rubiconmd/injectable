@@ -2,7 +2,9 @@ module Injectable
   module ClassMethods
     def self.extended(base)
       base.class_eval do
-        class_attribute :dependencies, :call_arguments, :initialize_arguments
+        simple_class_attribute :dependencies,
+                               :call_arguments,
+                               :initialize_arguments
 
         self.dependencies = DependenciesGraph.new(namespace: base)
         self.initialize_arguments = {}
@@ -15,6 +17,35 @@ module Injectable
         self.dependencies = dependencies.with_namespace(base)
         self.initialize_arguments = initialize_arguments.dup
         self.call_arguments = call_arguments.dup
+      end
+    end
+
+    # Blatantly stolen from rails' ActiveSupport.
+    # This is a simplified version of class_attribute
+    def simple_class_attribute(*attrs)
+      attrs.each do |name|
+        define_singleton_method(name) { nil }
+
+        ivar = "@#{name}"
+
+        define_singleton_method("#{name}=") do |val|
+          singleton_class.class_eval do
+            define_method(name) { val }
+          end
+
+          if singleton_class?
+            class_eval do
+              define_method(name) do
+                if instance_variable_defined? ivar
+                  instance_variable_get ivar
+                else
+                  singleton_class.send name
+                end
+              end
+            end
+          end
+          val
+        end
       end
     end
 
@@ -64,7 +95,7 @@ module Injectable
     #     # => @player_counter = PlayerCounter.new(@counter)
     def dependency(name, options = {}, &block)
       options[:block] = block if block_given?
-      options[:depends_on] = Array.wrap(options.fetch(:depends_on, []))
+      options[:depends_on] = Array(options.fetch(:depends_on, []))
       options[:name] = name
       dependencies.add(options)
       define_method name do

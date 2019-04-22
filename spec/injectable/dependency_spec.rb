@@ -64,7 +64,7 @@ describe Injectable::Dependency, 'instance' do
   end
 
   context 'when it receives a block' do
-    let(:some_dep) { stub('some_dep') }
+    let(:some_dep) { double('some_dep') }
     let(:options)  { { block: -> { some_dep } } }
 
     it { is_expected.to eq some_dep }
@@ -72,8 +72,8 @@ describe Injectable::Dependency, 'instance' do
 
   context 'when it receives the call: option' do
     let(:options) { { call: :render, block: -> { renderer } } }
-    let(:result)  { stub('Result') }
-    let(:renderer) { stub('Renderer', render: result) }
+    let(:result)  { double('Result') }
+    let(:renderer) { double('Renderer', render: result) }
 
     it 'wraps the specified method in a proc' do
       expect(subject.call).to eq result
@@ -82,12 +82,12 @@ describe Injectable::Dependency, 'instance' do
 
   context 'when it receives the with: option' do
     let(:options) { { with: [somearg], class: dependency } }
-    let(:dependency) { stub('Dependency') }
-    let(:somearg) { stub('Argument passed with :with option') }
-    let(:expected) { stub('Expected return') }
+    let(:dependency) { double('Dependency') }
+    let(:somearg) { double('Argument passed with :with option') }
+    let(:expected) { double('Expected return') }
 
     before do
-      dependency.stubs(:new).with(somearg).returns(expected)
+      allow(dependency).to receive(:new).with(somearg).and_return(expected)
     end
 
     it { is_expected.to eq expected }

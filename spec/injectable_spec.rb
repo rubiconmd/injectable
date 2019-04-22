@@ -1,3 +1,5 @@
+require 'forwardable'
+
 describe Injectable do
   context 'without defined #call' do
     subject do
@@ -169,9 +171,9 @@ describe Injectable do
     subject do
       Class.new do
         include Injectable
-
+        extend Forwardable
         dependency :some_renderer, call: :render
-        delegate :call, to: :some_renderer
+        def_delegators :some_renderer, :call
       end
     end
 
@@ -212,8 +214,9 @@ describe Injectable do
     subject do
       Class.new do
         include Injectable
+        extend Forwardable
         dependency :existing_class
-        delegate :call, to: :existing_class
+        def_delegators :existing_class, :call
       end
     end
 
@@ -234,8 +237,9 @@ describe Injectable do
     subject do
       Class.new do
         include Injectable
+        extend Forwardable
         dependency :something_else, class: WeirdName
-        delegate :call, to: :something_else
+        def_delegators :something_else, :call
       end
     end
 
@@ -315,8 +319,9 @@ describe Injectable do
     subject do
       Class.new do
         include Injectable
+        extend Forwardable
         dependency :injected_class
-        delegate :call, to: :injected_class
+        def_delegators :injected_class, :call
       end
     end
 
@@ -377,7 +382,7 @@ describe Injectable do
   end
 
   context 'with block dependencies that take dependencies' do
-    let(:dep) { stub('dep') }
+    let(:dep) { double('dep') }
 
     before do
       class BlockyClass
@@ -462,8 +467,9 @@ describe Injectable do
         end
 
         include Injectable
+        extend Forwardable
         dependency :dependency
-        delegate :call, to: :dependency
+        def_delegators :dependency, :call
       end
 
       class Child < Parent

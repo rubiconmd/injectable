@@ -35,7 +35,7 @@ module Injectable
 
     def check_for_missing_dependencies!(deps)
       missing = deps.reject { |dep| graph.key?(dep) }
-      return if missing.blank?
+      return if missing.empty?
 
       raise Injectable::MissingDependenciesException, "missing dependencies: #{missing.join(', ')}"
     end
