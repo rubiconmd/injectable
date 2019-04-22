@@ -26,7 +26,15 @@ module Injectable
     end
 
     def klass
-      @klass ||= self.class || name.to_s.camelcase.constantize
+      @klass ||= self.class || constantize
+    end
+
+    def constantize
+      Object.const_get(camelcased)
+    end
+
+    def camelcased
+      @camelcased ||= name.to_s.split('_').map(&:capitalize).join
     end
   end
 end
