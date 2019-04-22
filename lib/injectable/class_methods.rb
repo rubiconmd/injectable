@@ -2,11 +2,42 @@ module Injectable
   module ClassMethods
     def self.extended(base)
       base.class_eval do
-        class_attribute :dependencies, :call_arguments, :initialize_arguments
+        simple_class_attribute :dependencies,
+                               :call_arguments,
+                               :initialize_arguments
 
         self.dependencies = DependenciesGraph.new
         self.initialize_arguments = {}
         self.call_arguments = {}
+      end
+    end
+
+    # Blatantly stolen from rails' ActiveSupport.
+    # This is a simplified version of class_attribute
+    def simple_class_attribute(*attrs)
+      attrs.each do |name|
+        define_singleton_method(name) { nil }
+
+        ivar = "@#{name}"
+
+        define_singleton_method("#{name}=") do |val|
+          singleton_class.class_eval do
+            define_method(name) { val }
+          end
+
+          if singleton_class?
+            class_eval do
+              define_method(name) do
+                if instance_variable_defined? ivar
+                  instance_variable_get ivar
+                else
+                  singleton_class.send name
+                end
+              end
+            end
+          end
+          val
+        end
       end
     end
 
