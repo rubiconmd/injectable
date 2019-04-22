@@ -87,7 +87,7 @@ module Injectable
     #     # => @player_counter = PlayerCounter.new(@counter)
     def dependency(name, options = {}, &block)
       options[:block] = block if block_given?
-      options[:depends_on] = Array.wrap(options.fetch(:depends_on, []))
+      options[:depends_on] = Array(options.fetch(:depends_on, []))
       options[:name] = name
       dependencies.add(options)
       define_method name do
