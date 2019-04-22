@@ -377,7 +377,7 @@ describe Injectable do
   end
 
   context 'with block dependencies that take dependencies' do
-    let(:dep) { stub('dep') }
+    let(:dep) { double('dep') }
 
     before do
       class BlockyClass
