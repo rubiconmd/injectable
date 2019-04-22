@@ -9,7 +9,7 @@ module Injectable
     private
 
     def wrap_args(args)
-      args = with if with.present?
+      args = with unless with.nil?
       args.is_a?(Array) ? args : [args]
     end
 
@@ -22,11 +22,19 @@ module Injectable
     end
 
     def build_instance(args)
-      block.present? ? block.call(*args) : klass.new(*args)
+      block.nil? ? klass.new(*args) : block.call(*args)
     end
 
     def klass
-      @klass ||= self.class || name.to_s.camelcase.constantize
+      @klass ||= self.class || constantize
+    end
+
+    def constantize
+      Object.const_get(camelcased)
+    end
+
+    def camelcased
+      @camelcased ||= name.to_s.split('_').map(&:capitalize).join
     end
   end
 end
