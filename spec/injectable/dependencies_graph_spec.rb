@@ -1,5 +1,6 @@
 describe Injectable::DependenciesGraph, '#resolve' do
-  let(:graph) { described_class.new }
+  let(:ns)    { stub('Namespace') }
+  let(:graph) { described_class.new(namespace: ns) }
 
   context 'when depending on a dependency not declared' do
     subject do
@@ -18,7 +19,9 @@ describe Injectable::DependenciesGraph, '#resolve' do
     let(:dependency_class) { stub('Dependency class') }
     let(:dependency) { stub('Dependency instance') }
     let(:graph) do
-      described_class.new(proxy_class: proxy_class, dependency_class: dependency_class)
+      described_class.new(namespace: ns,
+                          proxy_class: proxy_class,
+                          dependency_class: dependency_class)
     end
 
     let(:name) { :some_name }
@@ -26,7 +29,7 @@ describe Injectable::DependenciesGraph, '#resolve' do
 
     before do
       dependency_class.stubs(:new).with(options).returns(dependency)
-      proxy_class.stubs(:new).with(name => dependency).returns(proxy)
+      proxy_class.stubs(:new).with(graph: { name => dependency }, namespace: ns).returns(proxy)
       graph.add(options)
     end
 

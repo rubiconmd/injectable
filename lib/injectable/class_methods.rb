@@ -4,9 +4,17 @@ module Injectable
       base.class_eval do
         class_attribute :dependencies, :call_arguments, :initialize_arguments
 
-        self.dependencies = DependenciesGraph.new
+        self.dependencies = DependenciesGraph.new(namespace: base)
         self.initialize_arguments = {}
         self.call_arguments = {}
+      end
+    end
+
+    def inherited(base)
+      base.class_eval do
+        self.dependencies = dependencies.with_namespace(base)
+        self.initialize_arguments = initialize_arguments.dup
+        self.call_arguments = call_arguments.dup
       end
     end
 

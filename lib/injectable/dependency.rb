@@ -1,9 +1,9 @@
 module Injectable
   # Initialize a dependency based on the options or the block passed
   Dependency = Struct.new(:name, :block, :class, :call, :with, :depends_on, keyword_init: true) do
-    def instance(args = [])
+    def instance(args: [], namespace: nil)
       args = wrap_args(args)
-      wrap_call build_instance(args)
+      wrap_call build_instance(args, namespace: namespace)
     end
 
     private
@@ -21,12 +21,16 @@ module Injectable
       end
     end
 
-    def build_instance(args)
-      block.present? ? block.call(*args) : klass.new(*args)
+    def build_instance(args, namespace:)
+      block.present? ? block.call(*args) : klass(namespace: namespace).new(*args)
     end
 
-    def klass
-      @klass ||= self.class || name.to_s.camelcase.constantize
+    def klass(namespace:)
+      self.class || resolve(namespace: namespace)
+    end
+
+    def resolve(namespace:)
+      (namespace || Object).const_get(name.to_s.camelize)
     end
   end
 end

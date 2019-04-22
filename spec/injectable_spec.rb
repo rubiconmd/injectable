@@ -337,23 +337,23 @@ describe Injectable do
         end
       end
 
-      class Child
+      class Somedep
         include Injectable
 
         dependency :counter
 
         def call
-          "Child -> #{counter.count}"
+          "Somedep -> #{counter.count}"
         end
       end
 
-      class Sibling
+      class Anotherdep
         include Injectable
 
         dependency :counter
 
         def call
-          "Sibling -> #{counter.count}"
+          "Anotherdep -> #{counter.count}"
         end
       end
     end
@@ -362,17 +362,17 @@ describe Injectable do
       Class.new do
         include Injectable
         dependency :counter
-        dependency :child, depends_on: :counter
-        dependency :sibling, depends_on: [:counter]
+        dependency :somedep, depends_on: :counter
+        dependency :anotherdep, depends_on: [:counter]
 
         def call
-          "#{child.call}, #{sibling.call}"
+          "#{somedep.call}, #{anotherdep.call}"
         end
       end
     end
 
     it 'shares dependency instances' do
-      expect(subject.call).to eq 'Child -> 1, Sibling -> 2'
+      expect(subject.call).to eq 'Somedep -> 1, Anotherdep -> 2'
     end
   end
 
@@ -438,5 +438,53 @@ describe Injectable do
 
       it { is_expected.not_to include :child_dep }
     end
+
+    context 'with a sibling class' do
+      subject { child.call(parent_arg: 'passed_arg') }
+
+      let(:sibling) do
+        Sibling = Class.new(parent) do
+          argument :required
+        end
+      end
+
+      it { is_expected.to eq 'Returning this comes from parent and passed_arg' }
+    end
+  end
+
+  describe 'smart dependency resolution' do
+    before do
+      class Parent
+        class Dependency
+          def call
+            'in parent'
+          end
+        end
+
+        include Injectable
+        dependency :dependency
+        delegate :call, to: :dependency
+      end
+
+      class Child < Parent
+        class Dependency
+          def call
+            'in child'
+          end
+        end
+      end
+
+      class Sibling < Parent
+        class Dependency
+          def call
+            'in sibling'
+          end
+        end
+      end
+    end
+
+    subject { [Parent.call, Child.call, Sibling.call] }
+
+    it { is_expected.to eq ['in parent', 'in child', 'in sibling']}
   end
 end
