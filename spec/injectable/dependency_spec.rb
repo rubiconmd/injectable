@@ -1,4 +1,4 @@
-RSpec.describe Injectable::Dependency, 'instance' do
+describe Injectable::Dependency, 'instance' do
   let(:name) { 'my_dependency' }
   let(:options) { { name: name } }
   let(:described_instance) { described_class.new(options) }
@@ -30,7 +30,7 @@ RSpec.describe Injectable::Dependency, 'instance' do
       end
     end
     let(:options) { { class: klass } }
-    subject { described_instance.instance(['some arg']).arg }
+    subject { described_instance.instance(args: ['some arg']).arg }
 
     it { is_expected.to eq 'some arg' }
   end
@@ -46,7 +46,7 @@ RSpec.describe Injectable::Dependency, 'instance' do
       end
     end
     let(:options) { { class: klass } }
-    subject { described_instance.instance(kwarg: 'some arg').kwarg }
+    subject { described_instance.instance(args: { kwarg: 'some arg' }).kwarg }
 
     it { is_expected.to eq 'some arg' }
   end
@@ -91,5 +91,20 @@ RSpec.describe Injectable::Dependency, 'instance' do
     end
 
     it { is_expected.to eq expected }
+  end
+
+  context 'within a namespace' do
+    let(:name) { :nested }
+
+    before do
+      module Namespace
+        class Nested
+        end
+      end
+    end
+
+    subject { described_instance.instance(namespace: Namespace) }
+
+    it { is_expected.to be_a Namespace::Nested }
   end
 end

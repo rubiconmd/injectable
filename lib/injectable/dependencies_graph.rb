@@ -2,9 +2,12 @@ module Injectable
   # Holds the dependency signatures of the service object
   class DependenciesGraph
     attr_reader :graph, :dependency_class, :proxy_class
+    attr_accessor :namespace
 
-    def initialize(proxy_class: ::Injectable::DependenciesProxy,
+    def initialize(namespace:,
+                   proxy_class: ::Injectable::DependenciesProxy,
                    dependency_class: ::Injectable::Dependency)
+      @namespace = namespace
       @graph = {}
       @proxy_class = proxy_class
       @dependency_class = dependency_class
@@ -14,6 +17,10 @@ module Injectable
       graph.keys
     end
 
+    def with_namespace(namespace)
+      dup.tap { |dupe| dupe.namespace = namespace }
+    end
+
     # Adds the signature of a dependency to the graph
     def add(name:, depends_on:, **kwargs)
       check_for_missing_dependencies!(depends_on)
@@ -21,7 +28,7 @@ module Injectable
     end
 
     def proxy
-      proxy_class.new(graph)
+      proxy_class.new(graph: graph, namespace: namespace)
     end
 
     private

@@ -1,17 +1,21 @@
 describe Injectable::DependenciesProxy, '#get' do
   let(:graph) do
     Injectable::DependenciesProxy.new(
-      dependency: dependency,
-      dependent:  dependent
+      namespace: ns,
+      graph: {
+        dependency: dependency,
+        dependent: dependent
+      }
     )
   end
 
+  let(:ns) { double('Namespace') }
   let(:dependent)  { double('Dep that depends on something', depends_on: [:dependency]) }
   let(:dependency) { double('Dependency', depends_on: []) }
   let(:dependency_instance) { double('Dependency instance') }
 
   before do
-    allow(dependency).to receive(:instance).with([]).and_return(dependency_instance)
+    allow(dependency).to receive(:instance).with(args: [], namespace: ns).and_return(dependency_instance)
   end
 
   subject { graph.get(target) }
@@ -31,7 +35,8 @@ describe Injectable::DependenciesProxy, '#get' do
     let(:dependent_instance) { double('Dependent instance') }
 
     before do
-      allow(dependent).to receive(:instance).with(dependency: dependency_instance).and_return(dependent_instance)
+      allow(dependent).to receive(:instance).with(args: { dependency: dependency_instance }, namespace: ns)
+                                            .and_return(dependent_instance)
     end
 
     it { is_expected.to eq dependent_instance }
