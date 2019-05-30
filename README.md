@@ -20,6 +20,84 @@ Or install it yourself as:
 
     $ gem install injectable
 
+## Motivation
+
+The main motivation of `Injectable` is to ease compliance with [SOLID's](https://en.wikipedia.org/wiki/SOLID)\*, [SRP](https://en.wikipedia.org/wiki/Single_responsibility_principle)\* and [Dependency Inversion principle](https://en.wikipedia.org/wiki/Dependency_inversion_principle) by providing a declarative and very readable [DSL](https://en.wikipedia.org/wiki/Domain-specific_language)\* which avoids lots of bolierplate code and thus encourages good practices.*
+
+*Sorry about the acronyms, but using an [Ubiquitous Language](https://martinfowler.com/bliki/UbiquitousLanguage.html) is important.
+
+### Encapsulate domain logic
+
+Using Ruby on Rails recommended practices as an example, when your application grows enough you usually end up with huge model classes with too many responsibilities.
+
+It's way better (although it requires effort and discipline) to split those models and extract domain logic into [Service Objects](https://martinfowler.com/bliki/AnemicDomainModel.html) ("SOs" from now on). You can do this without `Injectable`, but `Injectable` will make your SOs way more readable and a pleasure not only to write but also to test, while encouraging general good practices.
+
+### Avoiding to hardcode dependencies
+
+If you find occurences of `SomeClass.any_instance.expects(:method)` in your **unit** tests, then you are probably hardcoding dependencies:
+
+```rb
+test "MyClass#call"
+  Collaborator.any_instance.expects(:submit!) # hardcoded dependency
+  MyClass.new.call
+end
+
+class MyClass
+  attr_reader :collaborator
+
+  def initialize
+    @collaborator = Collaborator.new
+  end
+
+  def call
+    collaborator.submit!
+  end
+end
+```
+
+What if you did this instead:
+
+```rb
+test "MyClass#call"
+  collaborator = stub('Collaborator')
+  collaborator.expects(:submit!)
+  MyClass.new(collaborator: collaborator).call
+end
+
+class MyClass
+  attr_reader :collaborator
+
+  def initialize(collaborator: Collaborator.new) # we will just provide a default
+    @collaborator = collaborator
+  end
+
+  def call
+    collaborator.submit!
+  end
+end
+```
+
+The benefits are not only for testing, as now your class is more modular and you can swap collaborators as long as they have the proper interface, in this case they have to `respond_to :submit!`
+
+`Injectable` allows you to write the above code like this:
+
+```rb
+class MyClass
+  include Injectable
+
+  dependency :collaborator
+
+  def call
+    collaborator.submit!
+  end
+end
+```
+
+It might not seem a lot but:
+
+1. Imagine that you have 4 dependencies. That's a lot of boilerplate.
+2. `Injectable` is not only this, it has many more features. Please keep reading.
+
 ## Usage example
 
 `Injectable` is a mixin that you have to include in your class and it will provide several macros.
