@@ -1,5 +1,7 @@
 # Injectable
 
+[![Maintainability](https://api.codeclimate.com/v1/badges/a45cc5935a5c16b837ed/maintainability)](https://codeclimate.com/github/rubiconmd/injectable/maintainability)
+
 `Injectable` is an opinionated and declarative [Dependency Injection](https://en.wikipedia.org/wiki/Dependency_injection) library for ruby.
 
 It is being used in production (under ruby 2.5.1) in [RubiconMD](https://github.com/rubiconmd) and was extracted from its codebase.
@@ -209,8 +211,8 @@ There are several ways of declaring a `#dependency`:
 
 ```rb
 class ReportPdfRenderer
-  include Injectable 
-  
+  include Injectable
+
   dependency :some_dependency
 end
 ```
@@ -225,9 +227,9 @@ Notice that this happens **at runtime**, not when defining your class.
 ```rb
 class MyInjectable
   include Injectable
-  
+
   dependency :client, class: Aws::S3::Client
-  dependency :parser, class: VeryLongClassNameForMyParser 
+  dependency :parser, class: VeryLongClassNameForMyParser
 end
 ```
 
