@@ -519,4 +519,30 @@ describe Injectable do
       expect(subject.call).to eq "can't block this"
     end
   end
+
+  context 'when the dependency accepts a block and has #call aliased' do
+    before do
+      class BlockPasser
+        def run
+          yield
+        end
+      end
+    end
+
+    subject do
+      Class.new do
+        include Injectable
+
+        dependency :block_passer, call: :run
+
+        def call
+          block_passer.call { "can't block this" }
+        end
+      end
+    end
+
+    it 'passes the block to the dependency' do
+      expect(subject.call).to eq "can't block this"
+    end
+  end
 end
