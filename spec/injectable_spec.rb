@@ -493,4 +493,30 @@ describe Injectable do
 
     it { is_expected.to eq ['in parent', 'in child', 'in sibling'] }
   end
+
+  context 'when the dependency accepts a block' do
+    before do
+      class BlockPasser
+        def call
+          yield
+        end
+      end
+    end
+
+    subject do
+      Class.new do
+        include Injectable
+
+        dependency :block_passer
+
+        def call
+          block_passer.call { "can't block this" }
+        end
+      end
+    end
+
+    it 'passes the block to the dependency' do
+      expect(subject.call).to eq "can't block this"
+    end
+  end
 end
