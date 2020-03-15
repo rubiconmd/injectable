@@ -162,8 +162,8 @@ describe Injectable do
   context 'with dependencies that have a call: option' do
     before do
       SomeRenderer = Class.new do
-        def render
-          '#render has been called'
+        def render(arg, kwarg:)
+          "#render has been called with #{arg} and #{kwarg}"
         end
       end
     end
@@ -173,12 +173,15 @@ describe Injectable do
         include Injectable
         extend Forwardable
         dependency :some_renderer, call: :render
-        def_delegators :some_renderer, :call
+
+        def call
+          some_renderer.call('hello', kwarg: 'world')
+        end
       end
     end
 
     it 'wraps the specified method in a #call method' do
-      expect(subject.call).to eq '#render has been called'
+      expect(subject.call).to eq '#render has been called with hello and world'
     end
   end
 
