@@ -491,6 +491,6 @@ describe Injectable do
 
     subject { [Parent.call, Child.call, Sibling.call] }
 
-    it { is_expected.to eq ['in parent', 'in child', 'in sibling']}
+    it { is_expected.to eq ['in parent', 'in child', 'in sibling'] }
   end
 end
