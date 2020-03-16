@@ -16,6 +16,10 @@ module Injectable
     def wrap_call(the_instance)
       return the_instance unless call
 
+      if the_instance.respond_to? :call
+        raise Injectable::MethodAlreadyExistsException
+      end
+
       the_instance.tap do |instance|
         call_method = call
 
