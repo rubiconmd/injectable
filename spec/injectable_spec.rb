@@ -185,6 +185,36 @@ describe Injectable do
     end
   end
 
+  context 'with dependencies that have a call: option and an existing #call method' do
+    before do
+      SomeCallableRenderer = Class.new do
+        def render(arg, kwarg:)
+          "#render has been called with #{arg} and #{kwarg}"
+        end
+
+        def call(something_else)
+          "#call with #{something_else}"
+        end
+      end
+    end
+
+    subject do
+      Class.new do
+        include Injectable
+        extend Forwardable
+        dependency :some_callable_renderer, call: :render
+
+        def call
+          some_callable_renderer.call('hello', kwarg: 'world')
+        end
+      end
+    end
+
+    it 'raises an exception' do
+      expect { subject.call }.to raise_error Injectable::MethodAlreadyExistsException
+    end
+  end
+
   context 'with plural dependencies' do
     before do
       Chicharrons = Class.new
@@ -499,7 +529,7 @@ describe Injectable do
 
   context 'when the dependency accepts a block' do
     before do
-      class BlockPasser
+      class CallableBlockPasser
         def call
           yield
         end
@@ -510,10 +540,10 @@ describe Injectable do
       Class.new do
         include Injectable
 
-        dependency :block_passer
+        dependency :callable_block_passer
 
         def call
-          block_passer.call { "can't block this" }
+          callable_block_passer.call { "can't block this" }
         end
       end
     end
@@ -525,7 +555,7 @@ describe Injectable do
 
   context 'when the dependency accepts a block and has #call aliased' do
     before do
-      class BlockPasser
+      class RunnableBlockPasser
         def run
           yield
         end
@@ -536,10 +566,10 @@ describe Injectable do
       Class.new do
         include Injectable
 
-        dependency :block_passer, call: :run
+        dependency :runnable_block_passer, call: :run
 
         def call
-          block_passer.call { "can't block this" }
+          runnable_block_passer.call { "can't block this" }
         end
       end
     end

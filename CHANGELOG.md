@@ -1,5 +1,7 @@
 ### Unreleased
 
+* Raises exception if shadowing an existing `#call` method in a dependency
+
 ### 1.0.3 - 2020-03-16
 
 * Fixed a bug that wouldn't pass a block if `#call` was aliased (#7)
