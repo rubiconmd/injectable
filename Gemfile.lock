@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    injectable (1.0.3)
+    injectable (2.0.0)
 
 GEM
   remote: https://rubygems.org/
