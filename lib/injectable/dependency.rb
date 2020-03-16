@@ -16,8 +16,12 @@ module Injectable
     def wrap_call(the_instance)
       return the_instance unless call
 
-      lambda do |*args|
-        the_instance.public_send(call, *args)
+      the_instance.tap do |instance|
+        call_method = call
+
+        instance.define_singleton_method(:call) do |*args, &block|
+          send(call_method, *args, &block)
+        end
       end
     end
 

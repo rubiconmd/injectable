@@ -1,5 +1,5 @@
 describe Injectable::DependenciesGraph, '#resolve' do
-  let(:ns)    { stub('Namespace') }
+  let(:ns)    { double('Namespace') }
   let(:graph) { described_class.new(namespace: ns) }
 
   context 'when depending on a dependency not declared' do
