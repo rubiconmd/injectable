@@ -499,7 +499,7 @@ describe Injectable do
 
   context 'when the dependency accepts a block' do
     before do
-      class BlockPasser
+      class CallableBlockPasser
         def call
           yield
         end
@@ -510,10 +510,10 @@ describe Injectable do
       Class.new do
         include Injectable
 
-        dependency :block_passer
+        dependency :callable_block_passer
 
         def call
-          block_passer.call { "can't block this" }
+          callable_block_passer.call { "can't block this" }
         end
       end
     end
@@ -525,7 +525,7 @@ describe Injectable do
 
   context 'when the dependency accepts a block and has #call aliased' do
     before do
-      class BlockPasser
+      class RunnableBlockPasser
         def run
           yield
         end
@@ -536,10 +536,10 @@ describe Injectable do
       Class.new do
         include Injectable
 
-        dependency :block_passer, call: :run
+        dependency :runnable_block_passer, call: :run
 
         def call
-          block_passer.call { "can't block this" }
+          runnable_block_passer.call { "can't block this" }
         end
       end
     end
