@@ -1,6 +1,6 @@
 # Injectable
 
-[![Maintainability](https://api.codeclimate.com/v1/badges/a45cc5935a5c16b837ed/maintainability)](https://codeclimate.com/github/rubiconmd/injectable/maintainability)
+[![Maintainability](https://api.codeclimate.com/v1/badges/a45cc5935a5c16b837ed/maintainability)](https://codeclimate.com/github/rubiconmd/injectable/maintainability)![Ruby](https://github.com/rubiconmd/injectable/workflows/Ruby/badge.svg)
 
 `Injectable` is an opinionated and declarative [Dependency Injection](https://en.wikipedia.org/wiki/Dependency_injection) library for ruby.
 
