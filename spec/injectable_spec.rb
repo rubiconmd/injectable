@@ -215,6 +215,24 @@ describe Injectable do
     end
   end
 
+  context 'with dependencies that have a call: option with a constant' do
+    subject do
+      Class.new do
+        include Injectable
+        dependency(:some_constant, call: :name) { Object }
+
+        def call
+          some_constant.call
+        end
+      end
+    end
+
+    it 'does not try to patch the dependency twice' do
+      subject.call
+      expect(subject.call).to eq 'Object'
+    end
+  end
+
   context 'with plural dependencies' do
     before do
       Chicharrons = Class.new

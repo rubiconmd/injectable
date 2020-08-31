@@ -20,13 +20,7 @@ module Injectable
         raise Injectable::MethodAlreadyExistsException
       end
 
-      the_instance.tap do |instance|
-        call_method = call
-
-        instance.define_singleton_method(:call) do |*args, &block|
-          send(call_method, *args, &block)
-        end
-      end
+      the_instance.public_method(call)
     end
 
     def build_instance(args, namespace:)
