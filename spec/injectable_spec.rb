@@ -227,9 +227,16 @@ describe Injectable do
       end
     end
 
-    it 'does not try to patch the dependency twice' do
+    before do
       subject.call
+    end
+
+    it 'does not try to patch the dependency twice' do
       expect(subject.call).to eq 'Object'
+    end
+
+    it 'leaves the dependency unpatched' do
+      expect(Object).not_to respond_to(:call)
     end
   end
 
