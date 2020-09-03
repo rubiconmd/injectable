@@ -18,6 +18,15 @@ module Injectable
       super()
     end
 
+    # Allows using the instance in a block construct like
+    # `array.map(&MyService.new(**deps))`
+    def to_proc
+      method(:call).to_proc
+    end
+
+    # Allows using the instance in a case construct
+    alias === call
+
     private
 
     def check_call_definition!

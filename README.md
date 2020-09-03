@@ -332,6 +332,41 @@ argument :browser, default: 'Unknown'
 
 If you don't pass the `:default` option the argument will be required.
 
+## Proc-like behavior
+
+Injectable objects respond to `call`, and they can be used wherever a proc is.
+
+### Chaining with implicit block syntax
+
+Just like usual Procs and symbols, you can prefix an Injectable with `&` and
+use it as block
+
+```rb
+my_array.
+  map(&MyService).
+  reject(&:empty?).
+  map(&MyOtherService.new(**some_dependencies))
+```
+
+```rb
+my_hash.
+  tap(&MySideEffects).
+  then(&MyTransformer)
+```
+
+### Triple-equal for case/when
+
+Just like usual procs (and ranges, regular expressions and classes), you can
+use (and abuse) injectable objects for condition check:
+
+```rb
+case my_hash
+when MyValidator
+  "ok"
+else
+  "failed"
+end
+```
 
 ## Development
 
