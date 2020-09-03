@@ -56,6 +56,15 @@ module Injectable
       new.call(args)
     end
 
+    # Allows using the class in a block construct like
+    # `array.map(&MyService)`
+    def to_proc
+      method(:call).to_proc
+    end
+
+    # Allows using the class in a case construct
+    alias === call
+
     # Declare dependencies for the service
     # @param name [Symbol] the name of the service
     # @option options [Class] :class The class to use if it's different from +name+

@@ -36,6 +36,69 @@ describe Injectable do
     end
   end
 
+  context 'passed as ampersanded block' do
+    subject do
+      Class.new do
+        include Injectable
+
+        dependency(:mode) { :upcase }
+
+        argument :string
+
+        def call
+          string.public_send(mode)
+        end
+      end
+    end
+
+    it 'is treated as block' do
+      result = {string: 'Asdf'}.then(&subject)
+
+      expect(result).to eq 'ASDF'
+    end
+
+    it 'instances are treated as blocks' do
+      result = {string: 'Asdf'}.then(&subject.new(mode: :downcase))
+
+      expect(result).to eq 'asdf'
+    end
+  end
+
+  context 'when used as a case matcher' do
+    subject do
+      Class.new do
+        include Injectable
+
+        dependency(:drinking_age) { 21 }
+
+        argument :age
+
+        def call
+          age >= drinking_age
+        end
+      end
+    end
+
+    def allowance(age)
+      case {age: age}
+      when subject.new(drinking_age: 40)
+        '40 or more, anything goes'
+      when subject
+        '21 to 40, only beer'
+      else
+        'go home'
+      end
+    end
+
+    it 'matches as expected' do
+      expect(allowance(55)).to eq '40 or more, anything goes'
+      expect(allowance(22)).to eq '21 to 40, only beer'
+      expect(allowance(19)).to eq 'go home'
+    end
+  end
+
+
+
   context 'with dependencies' do
     subject do
       Class.new do
