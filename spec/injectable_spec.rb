@@ -578,4 +578,30 @@ describe Injectable do
       expect(subject.call).to eq "can't block this"
     end
   end
+
+  context 'when subclassing' do
+    let(:service) do
+      Class.new do
+        include Injectable
+
+        argument :num, required: true
+
+        def call
+          num + 2
+        end
+      end
+    end
+
+    let(:service_subclass) do
+      Class.new(service) do
+        def call
+          super + 3
+        end
+      end
+    end
+
+    it 'respects inheritance' do
+      expect(service_subclass.call(num: 1)).to eq 6
+    end
+  end
 end
