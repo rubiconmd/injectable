@@ -355,6 +355,6 @@ Everyone interacting in the Injectable project’s codebases, issue trackers, ch
 
 - [RubiconMD](https://github.com/rubiconmd) allowed extracting this gem from its codebase and release it as open source.
 - [Durran Jordan](https://github.com/durran) allowed the usage of the gem name at rubygems.org.
-- [David Marchante](https://github.com/iovis9) brainstormed the `initialize`/`call` approach, did all code reviews and provided lots of insightful feedback and suggestions. He also wrote the inline documentation.
+- [David Marchante](https://github.com/iovis) brainstormed the `initialize`/`call` approach, did all code reviews and provided lots of insightful feedback and suggestions. He also wrote the inline documentation.
 - [Julio Antequera](https://github.com/jantequera), [Jimmi Carney](https://github.com/ayoformayo) and [Anthony Rocco](https://github.com/amrocco) had the patience to use it and report many bugs. Also most of the features in this gem came up when reviewing their usage of it. Anthony also made the effort of extracting the code from RubiconMD's codebase.
 - [Rodrigo Álvarez](https://github.com/Papipo) had the idea for the DSL and actually wrote the library.

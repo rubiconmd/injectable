@@ -5,8 +5,8 @@ require 'injectable/version'
 Gem::Specification.new do |spec|
   spec.name          = 'injectable'
   spec.version       = Injectable::VERSION
-  spec.authors       = %w[Papipo iovis9 jantequera amrocco]
-  spec.email         = %w[dev@rubiconmd.com david.marchante@rubiconmd.com julio@rubiconmd.com anthony@rubiconmd.com]
+  spec.authors       = %w[Papipo iovis jantequera amrocco rewritten]
+  spec.email         = %w[dev@rubiconmd.com]
 
   spec.summary       = 'A library to help you build nice service objects with dependency injection.'
   spec.homepage      = 'https://github.com/rubiconmd/injectable'
