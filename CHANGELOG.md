@@ -1,5 +1,11 @@
 ### Unreleased
 
+### 2.1.0 - 2021-01-05
+
+* enhancements
+  * Return `method` object instead of monkey patched instance (#17)
+  * Prepare for Ruby 3.0 (#22)
+
 ### 2.0.0 - 2020-03-16
 
 * breaking changes
