@@ -24,7 +24,9 @@ module Injectable
     end
 
     def build_instance(args, namespace:)
-      block.nil? ? klass(namespace: namespace).new(*args) : block.call(*args)
+      return klass(namespace: namespace).new(*args) if block.nil?
+
+      block.call(*args)
     end
 
     def klass(namespace:)
