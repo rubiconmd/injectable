@@ -30,7 +30,7 @@ describe Injectable::DependenciesGraph, '#resolve' do
     before do
       allow(dependency_class).to receive(:new).with(options).and_return(dependency)
       allow(proxy_class).to receive(:new).with(graph: { name => dependency }, namespace: ns).and_return(proxy)
-      graph.add(options)
+      graph.add(**options)
     end
 
     subject { graph.proxy }
