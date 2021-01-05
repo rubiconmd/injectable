@@ -97,7 +97,7 @@ module Injectable
       options[:block] = block if block_given?
       options[:depends_on] = Array(options.fetch(:depends_on, []))
       options[:name] = name
-      dependencies.add(options)
+      dependencies.add(**options)
       define_method name do
         instance_variable_get("@#{name}") || dependencies_proxy.get(name)
       end
