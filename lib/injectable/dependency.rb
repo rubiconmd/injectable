@@ -12,7 +12,7 @@ module Injectable
     def wrap_args(args)
       args = with unless with.nil?
 
-      args_splitter(args)
+      split_args(args)
     end
 
     def wrap_call(the_instance)
@@ -51,7 +51,7 @@ module Injectable
       @camelcased ||= name.to_s.split('_').map(&:capitalize).join
     end
 
-    def args_splitter(args)
+    def split_args(args)
       args = args.is_a?(Array) ? args : [args]
 
       positional_args = []
