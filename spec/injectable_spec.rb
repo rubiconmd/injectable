@@ -159,6 +159,38 @@ describe Injectable do
     end
   end
 
+  context 'with dependencies that have a with: keyword option and other with array' do
+    before do
+      DepWithBothArgs = Class.new do
+        attr_reader :somearg, :options
+        def initialize(somearg, **options)
+          @options = options
+          @somearg = somearg
+        end
+
+        def to_s
+          "#{options[:my_arg]} | #{somearg}"
+        end
+      end
+    end
+
+    subject do
+      Class.new do
+        include Injectable
+
+        dependency :dep_with_both_args, with: ['with: arg', { my_arg: 'with: kwarg' }]
+
+        def call
+          dep_with_both_args.to_s
+        end
+      end
+    end
+
+    it 'passes it to the dependency #initialize method' do
+      expect(subject.call).to eq 'with: kwarg | with: arg'
+    end
+  end
+
   context 'with dependencies that have a call: option' do
     before do
       SomeRenderer = Class.new do
