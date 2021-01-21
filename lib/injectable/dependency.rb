@@ -2,15 +2,17 @@ module Injectable
   # Initialize a dependency based on the options or the block passed
   Dependency = Struct.new(:name, :block, :class, :call, :with, :depends_on, keyword_init: true) do
     def instance(args: [], namespace: nil)
-      args = wrap_args(args)
-      wrap_call build_instance(args, namespace: namespace)
+      positional_args, kwargs = wrap_args(args)
+
+      wrap_call build_instance(positional_args, kwargs, namespace: namespace)
     end
 
     private
 
     def wrap_args(args)
       args = with unless with.nil?
-      args.is_a?(Array) ? args : [args]
+
+      args_splitter(args)
     end
 
     def wrap_call(the_instance)
@@ -23,10 +25,10 @@ module Injectable
       the_instance.public_method(call)
     end
 
-    def build_instance(args, namespace:)
-      return klass(namespace: namespace).new(*args) if block.nil?
+    def build_instance(args, kwargs, namespace:)
+      return klass(namespace: namespace).new(*args, **kwargs) if block.nil?
 
-      block.call(*args)
+      block.call(*args, **kwargs)
     end
 
     def klass(namespace:)
@@ -39,6 +41,17 @@ module Injectable
 
     def camelcased
       @camelcased ||= name.to_s.split('_').map(&:capitalize).join
+    end
+
+    def args_splitter(args)
+      args = args.is_a?(Array) ? args : [args]
+
+      positional_args = []
+      kwargs = {}
+
+      args.each { |arg| arg.is_a?(Hash) ? kwargs.merge!(arg) : positional_args << arg }
+
+      return positional_args, kwargs
     end
   end
 end
