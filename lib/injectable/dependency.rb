@@ -26,9 +26,17 @@ module Injectable
     end
 
     def build_instance(args, kwargs, namespace:)
-      return klass(namespace: namespace).new(*args, **kwargs) if block.nil?
+      if RUBY_VERSION < '2.7'
+        args << kwargs if kwargs.any?
 
-      block.call(*args, **kwargs)
+        return klass(namespace: namespace).new(*args) if block.nil?
+
+        block.call(*args)
+      else
+        return klass(namespace: namespace).new(*args, **kwargs) if block.nil?
+
+        block.call(*args, **kwargs)
+      end
     end
 
     def klass(namespace:)
