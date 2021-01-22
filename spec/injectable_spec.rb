@@ -194,7 +194,7 @@ describe Injectable do
   context 'with dependencies that get hashes for both positional args and kwargs' do
     before do
       DepWithManyArgs = Class.new do
-        def initialize(arg1, arg2 = nil, arg3: nil, arg4: nil)
+        def initialize(arg1 = nil, arg2 = nil, arg3: nil, arg4: nil)
           @args = [arg1, arg2, arg3, arg4]
         end
 
@@ -210,8 +210,8 @@ describe Injectable do
           include Injectable
 
           dependency :dep_with_many_args, with: [
-            {arg1_key: 'arg1_value'}, 
-            {arg2_key: 'arg2_value'}, 
+            {arg1_key: 'arg1_value'},
+            {arg2_key: 'arg2_value'},
             arg3: 'arg3_value',
             arg4: 'arg4_value'
           ]
@@ -224,8 +224,8 @@ describe Injectable do
 
       it 'keeps arguments separate' do
         expect(subject.call).to eq [
-          {arg1_key: 'arg1_value'}, 
-          {arg2_key: 'arg2_value'}, 
+          {arg1_key: 'arg1_value'},
+          {arg2_key: 'arg2_value'},
           'arg3_value',
           'arg4_value'
         ]
@@ -238,7 +238,7 @@ describe Injectable do
           include Injectable
 
           dependency :dep_with_many_args, with: [
-            {arg1_key: 'arg1_value'}, 
+            {arg1_key: 'arg1_value'},
             arg3: 'arg3_value',
             arg4: 'arg4_value'
           ]
@@ -249,24 +249,24 @@ describe Injectable do
         end
       end
 
-      it 'keeps arguments separate' do
+      it 'associates correctly kwargs' do
         expect(subject.call).to eq [
-          {arg1_key: 'arg1_value'}, 
-          nil, 
+          {arg1_key: 'arg1_value'},
+          nil,
           'arg3_value',
           'arg4_value'
         ]
       end
     end
 
-    context 'when kwargs are skipped' do
+    context 'when kwargs are skipped and last positional is not kwarg-like' do
       subject do
         Class.new do
           include Injectable
 
           dependency :dep_with_many_args, with: [
-            {arg1_key: 'arg1_value'}, 
-            {arg2_key: 'arg2_value'}
+            {arg1_key: 'arg1_value'},
+            {'arg2_key' => 'arg2_value'}
           ]
 
           def call
@@ -275,18 +275,66 @@ describe Injectable do
         end
       end
 
-      it 'keeps arguments separate' do
+      it 'keeps positional args as is' do
         expect(subject.call).to eq [
-          {arg1_key: 'arg1_value'}, 
-          {arg2_key: 'arg2_value'}, 
+          {arg1_key: 'arg1_value'},
+          {'arg2_key' => 'arg2_value'},
           nil,
           nil
         ]
       end
     end
 
-  end
+    context 'when kwargs are skipped and last positional is kwarg-like' do
+      subject do
+        Class.new do
+          include Injectable
 
+          dependency :dep_with_many_args, with: [
+            {arg1_key: 'arg1_value'},
+            {arg3: 'arg3_value'}
+          ]
+
+          def call
+            dep_with_many_args.call
+          end
+        end
+      end
+
+      it 'splats last positional arg as kwargs hash' do
+        expect(subject.call).to eq [
+          {arg1_key: 'arg1_value'},
+          nil,
+          'arg3_value',
+          nil
+        ]
+      end
+    end
+
+
+    context 'when everything is skipped' do
+      subject do
+        Class.new do
+          include Injectable
+
+          dependency :dep_with_many_args
+
+          def call
+            dep_with_many_args.call
+          end
+        end
+      end
+
+      it 'does not add phony kwargs or hashes' do
+        expect(subject.call).to eq [
+          nil,
+          nil,
+          nil,
+          nil
+        ]
+      end
+    end
+  end
 
   context 'with dependencies that have a call: option' do
     before do

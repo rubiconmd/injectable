@@ -10,14 +10,17 @@ module Injectable
     private
 
     def split_args(args)
-      positional_args = []
-      kwargs = {}
+      args = preprocess_args(args)
 
-      preprocess_args(args).each do |arg|
-        arg.is_a?(Hash) ? kwargs.merge!(arg) : positional_args << arg
+      return [[], {}] if args.empty?
+
+      kwargs = args.pop
+
+      if kwargs.is_a?(Hash) && kwargs.keys.all? { |key| key.is_a?(Symbol) }
+        [args, kwargs]
+      else
+        [args << kwargs, {}]
       end
-
-      [positional_args, kwargs]
     end
 
     def preprocess_args(args)
@@ -26,7 +29,7 @@ module Injectable
     end
 
     def wrap_args(args)
-      args.is_a?(Array) ? args : [args]
+      args.is_a?(Array) ? args.clone : [args]
     end
 
     def wrap_call(the_instance)
@@ -42,7 +45,14 @@ module Injectable
     def build_instance(args, kwargs, namespace:)
       return build_instance_26(args, kwargs, namespace: namespace) if RUBY_VERSION < '2.7'
 
-      block.nil? ? klass(namespace: namespace).new(*args, **kwargs) : block.call(*args, **kwargs)
+      instantiator = block || klass(namespace: namespace).method(:new)
+      if kwargs.empty?
+        # otherwise an empty hash will be added in ruby 2.7, which could be taken as
+        # positional argument instead.
+        instantiator.call(*args)
+      else
+        instantiator.call(*args, **kwargs)
+      end
     end
 
     def klass(namespace:)
