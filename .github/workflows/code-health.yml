@@ -1,0 +1,46 @@
+name: Code Health
+
+on:
+  pull_request:
+    - ready_for_review
+    - review_requested
+
+
+jobs:
+  standardrb:
+    name: runner / standardrb
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: SennaLabs/action-standardrb@v1
+        with:
+          rubocop_extensions: rubocop-performance rubocop-rspec
+          github_token: ${{ secrets.github_token }}
+          rubocop_flags: --format progress
+
+  reek:
+    name: runner / reek
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: reviewdog/action-reek@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+
+  brakeman:
+    name: runner / brakeman
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: reviewdog/action-brakeman@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+
+  fasterer:
+    name: runner / fasterer
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: vk26/action-fasterer@v1
+        with:
+          github_token: ${{ secrets.github_token }}
