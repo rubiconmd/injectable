@@ -8,16 +8,18 @@ on:
 
 
 jobs:
-  standardrb:
-    name: runner / standardrb
+  rubocop:
+    name: runner / rubocop
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: SennaLabs/action-standardrb@v1
+      - uses: reviewdog/action-rubocop@v1
         with:
           rubocop_extensions: rubocop-performance rubocop-rspec
           github_token: ${{ secrets.github_token }}
-          rubocop_flags: --format progress
+      # - uses: reviewdog/action-suggester@v1
+      #   with:
+      #     tool_name: rubocop
 
   reek:
     name: runner / reek
