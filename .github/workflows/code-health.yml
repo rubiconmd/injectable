@@ -15,9 +15,9 @@ jobs:
         with:
           rubocop_extensions: rubocop-performance rubocop-rspec
           github_token: ${{ secrets.github_token }}
-      # - uses: reviewdog/action-suggester@v1
-      #   with:
-      #     tool_name: rubocop
+      - uses: reviewdog/action-suggester@v1
+        with:
+          tool_name: rubocop
 
   reek:
     name: runner / reek
