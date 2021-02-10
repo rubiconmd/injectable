@@ -4,8 +4,6 @@ on:
   pull_request:
     types:
       - ready_for_review
-      - review_requested
-
 
 jobs:
   rubocop:
