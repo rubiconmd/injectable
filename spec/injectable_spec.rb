@@ -1,4 +1,5 @@
 require 'forwardable'
+require_relative 'support/dependencies'
 
 describe Injectable do
   context 'without defined #call' do
@@ -106,15 +107,6 @@ describe Injectable do
   end
 
   context 'with dependencies that have a with: array option' do
-    before do
-      DepWithNormalArg = Class.new do
-        attr_reader :somearg
-        def initialize(somearg)
-          @somearg = somearg
-        end
-      end
-    end
-
     subject do
       Class.new do
         include Injectable
@@ -133,15 +125,6 @@ describe Injectable do
   end
 
   context 'with dependencies that have a with: keyword option' do
-    before do
-      DepWithKwargs = Class.new do
-        attr_reader :somearg
-        def initialize(somearg:)
-          @somearg = somearg
-        end
-      end
-    end
-
     subject do
       Class.new do
         include Injectable
@@ -160,20 +143,6 @@ describe Injectable do
   end
 
   context 'with dependencies that have a with: keyword option and other with array' do
-    before do
-      DepWithBothArgs = Class.new do
-        attr_reader :somearg, :options
-        def initialize(somearg, **options)
-          @options = options
-          @somearg = somearg
-        end
-
-        def to_s
-          "#{options[:my_arg]} | #{somearg}"
-        end
-      end
-    end
-
     subject do
       Class.new do
         include Injectable
@@ -192,18 +161,6 @@ describe Injectable do
   end
 
   context 'with dependencies that get hashes for both positional args and kwargs' do
-    before do
-      DepWithManyArgs = Class.new do
-        def initialize(arg1 = nil, arg2 = nil, arg3: nil, arg4: nil)
-          @args = [arg1, arg2, arg3, arg4]
-        end
-
-        def call
-          @args
-        end
-      end
-    end
-
     context 'when all args are given' do
       subject do
         Class.new do
@@ -337,15 +294,7 @@ describe Injectable do
   end
 
   context 'with dependencies that have a call: option' do
-    before do
-      SomeRenderer = Class.new do
-        def render(arg, kwarg:)
-          "#render has been called with #{arg} and #{kwarg}"
-        end
-      end
-    end
-
-    subject do
+   subject do
       Class.new do
         include Injectable
         extend Forwardable
@@ -363,18 +312,6 @@ describe Injectable do
   end
 
   context 'with dependencies that have a call: option and an existing #call method' do
-    before do
-      SomeCallableRenderer = Class.new do
-        def render(arg, kwarg:)
-          "#render has been called with #{arg} and #{kwarg}"
-        end
-
-        def call(something_else)
-          "#call with #{something_else}"
-        end
-      end
-    end
-
     subject do
       Class.new do
         include Injectable
@@ -418,10 +355,6 @@ describe Injectable do
   end
 
   context 'with plural dependencies' do
-    before do
-      Chicharrons = Class.new
-    end
-
     subject do
       Class.new do
         include Injectable
@@ -438,14 +371,6 @@ describe Injectable do
   end
 
   context 'with dependencies without block' do
-    before do
-      ExistingClass = Class.new do
-        def call
-          'This has been constantized!'
-        end
-      end
-    end
-
     subject do
       Class.new do
         include Injectable
@@ -461,14 +386,6 @@ describe Injectable do
   end
 
   context 'with dependencies without block but with :class' do
-    before do
-      WeirdName = Class.new do
-        def call
-          'This has been constantized!'
-        end
-      end
-    end
-
     subject do
       Class.new do
         include Injectable
@@ -533,24 +450,6 @@ describe Injectable do
   end
 
   context 'with recursive dependencies' do
-    before do
-      InjectedDep = Class.new do
-        def call
-          'InjectedDep result'
-        end
-      end
-
-      InjectedClass = Class.new do
-        include Injectable
-
-        dependency :injected_dep
-
-        def call
-          "I got #{injected_dep.call}"
-        end
-      end
-    end
-
     subject do
       Class.new do
         include Injectable
@@ -566,38 +465,6 @@ describe Injectable do
   end
 
   context 'with depends_on' do
-    before do
-      class Counter
-        def initialize
-          @count = 0
-        end
-
-        def count
-          @count += 1
-        end
-      end
-
-      class Somedep
-        include Injectable
-
-        dependency :counter
-
-        def call
-          "Somedep -> #{counter.count}"
-        end
-      end
-
-      class Anotherdep
-        include Injectable
-
-        dependency :counter
-
-        def call
-          "Anotherdep -> #{counter.count}"
-        end
-      end
-    end
-
     subject do
       Class.new do
         include Injectable
@@ -618,24 +485,6 @@ describe Injectable do
 
   context 'with block dependencies that take dependencies' do
     let(:dep) { double('dep') }
-
-    before do
-      class BlockyClass
-        include Injectable
-
-        dependency :needed do
-          'this is needed'
-        end
-
-        dependency :needer, depends_on: :needed do |needed:|
-          "I got '#{needed}'"
-        end
-
-        def call
-          needer
-        end
-      end
-    end
 
     it 'passes them correctly' do
       expect(BlockyClass.call).to eq "I got 'this is needed'"
@@ -693,51 +542,12 @@ describe Injectable do
   end
 
   describe 'smart dependency resolution' do
-    before do
-      class Parent
-        class Dependency
-          def call
-            'in parent'
-          end
-        end
-
-        include Injectable
-        extend Forwardable
-        dependency :dependency
-        def_delegators :dependency, :call
-      end
-
-      class Child < Parent
-        class Dependency
-          def call
-            'in child'
-          end
-        end
-      end
-
-      class Sibling < Parent
-        class Dependency
-          def call
-            'in sibling'
-          end
-        end
-      end
-    end
-
     subject { [Parent.call, Child.call, Sibling.call] }
 
     it { is_expected.to eq ['in parent', 'in child', 'in sibling'] }
   end
 
   context 'when the dependency accepts a block' do
-    before do
-      class CallableBlockPasser
-        def call
-          yield
-        end
-      end
-    end
-
     subject do
       Class.new do
         include Injectable
@@ -756,14 +566,6 @@ describe Injectable do
   end
 
   context 'when the dependency accepts a block and has #call aliased' do
-    before do
-      class RunnableBlockPasser
-        def run
-          yield
-        end
-      end
-    end
-
     subject do
       Class.new do
         include Injectable
