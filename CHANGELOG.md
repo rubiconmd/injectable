@@ -1,5 +1,10 @@
 ### Unreleased
 
+### 2.1.1 - 2021-03-15
+
+* bug fixes
+  * Address final Ruby 2.7 warnings (#24)
+
 ### 2.1.0 - 2021-01-05
 
 * enhancements
