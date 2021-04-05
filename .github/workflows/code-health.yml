@@ -1,0 +1,46 @@
+name: Code Health
+
+on:
+  pull_request:
+    types:
+      - ready_for_review
+
+jobs:
+  rubocop:
+    name: runner / rubocop
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: HeRoMo/pronto-action@v1.12.0
+        with:
+          github_token: ${{ secrets.github_token }}
+      - uses: reviewdog/action-suggester@v1
+        with:
+          tool_name: rubocop
+
+  reek:
+    name: runner / reek
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: reviewdog/action-reek@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+
+  brakeman:
+    name: runner / brakeman
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: reviewdog/action-brakeman@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+
+  fasterer:
+    name: runner / fasterer
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: vk26/action-fasterer@v1
+        with:
+          github_token: ${{ secrets.github_token }}

@@ -18,7 +18,8 @@ describe Injectable::DependenciesProxy, '#get' do
     allow(dependency).to receive(:instance).with(args: [], namespace: ns).and_return(dependency_instance)
   end
 
-  subject { graph.get(target) }
+  subject { graph.get(target)     # another purposeful felony
+   }
 
   it 'memoizes instances' do
     expect(graph.get(:dependency)).to eq graph.get(:dependency)
