@@ -9,6 +9,8 @@ module Injectable
         self.dependencies = DependenciesGraph.new(namespace: base)
         self.initialize_arguments = {}
         self.call_arguments = {}
+
+        prepend(Injectable::CallFacade[base])
       end
     end
 
@@ -17,6 +19,8 @@ module Injectable
         self.dependencies = dependencies.with_namespace(base)
         self.initialize_arguments = initialize_arguments.dup
         self.call_arguments = call_arguments.dup
+
+        prepend(Injectable::CallFacade[base])
       end
     end
 

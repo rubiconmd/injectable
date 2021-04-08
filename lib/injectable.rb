@@ -1,4 +1,5 @@
 require 'injectable/version'
+require 'injectable/call_facade'
 require 'injectable/class_methods'
 require 'injectable/dependencies_graph'
 require 'injectable/dependencies_proxy'
