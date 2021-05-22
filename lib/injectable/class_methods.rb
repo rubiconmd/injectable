@@ -99,7 +99,9 @@ module Injectable
       options[:name] = name
       dependencies.add(**options)
       define_method name do
-        instance_variable_get("@#{name}") || dependencies_proxy.get(name)
+        return instance_variable_get("@#{name}") if instance_variable_defined?("@#{name}")
+
+        instance_variable_set "@#{name}", instantiate_dependency(name)
       end
     end
 

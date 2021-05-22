@@ -100,6 +100,12 @@ class Somedep
   end
 end
 
+class OverridenCounter
+  def count
+    "Overriden!"
+  end
+end
+
 class Anotherdep
   include Injectable
 
