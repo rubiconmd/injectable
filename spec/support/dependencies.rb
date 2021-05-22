@@ -101,8 +101,12 @@ class Somedep
 end
 
 class OverridenCounter
+  def initialize
+    @count = 0
+  end
+
   def count
-    "Overriden!"
+    @count += 1 * 2
   end
 end
 

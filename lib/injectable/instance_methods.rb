@@ -57,7 +57,9 @@ module Injectable
     def variables_from_dependencies!(args)
       self.class.dependencies.names.each do |name|
         next if self.class.initialize_arguments.key?(name)
-        instance_variable_set("@#{name}", args[name]) if args.key?(name)
+        next unless args.key?(name)
+
+        instance_variable_set("@#{name}", args[name].respond_to?(:new) ? args[name].new : args[name]) 
       end
     end
   end
