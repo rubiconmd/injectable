@@ -1,15 +1,16 @@
+require 'forwardable'
+
 module Injectable
   # Holds the dependency signatures of the service object
   class DependenciesGraph
-    attr_reader :graph, :dependency_class, :proxy_class
+    attr_reader :graph, :dependency_class
     attr_accessor :namespace
+    extend Forwardable
+    def_delegators :@graph, :[]
 
-    def initialize(namespace:,
-                   proxy_class: ::Injectable::DependenciesProxy,
-                   dependency_class: ::Injectable::Dependency)
+    def initialize(namespace:, dependency_class: ::Injectable::Dependency)
       @namespace = namespace
       @graph = {}
-      @proxy_class = proxy_class
       @dependency_class = dependency_class
     end
 
@@ -25,10 +26,6 @@ module Injectable
     def add(name:, depends_on:, **kwargs)
       check_for_missing_dependencies!(depends_on)
       graph[name] = dependency_class.new(kwargs.merge(name: name, depends_on: depends_on))
-    end
-
-    def proxy
-      proxy_class.new(graph: graph, namespace: namespace)
     end
 
     private

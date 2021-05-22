@@ -481,6 +481,10 @@ describe Injectable do
     it 'shares dependency instances' do
       expect(subject.call).to eq 'Somedep -> 1, Anotherdep -> 2'
     end
+
+    it 'allows overriding the dependency' do
+      expect(subject.new(counter: OverridenCounter.new).call).to eq('Somedep -> Overriden!, Anotherdep -> Overriden!')
+    end
   end
 
   context 'with block dependencies that take dependencies' do
