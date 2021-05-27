@@ -504,6 +504,10 @@ describe Injectable do
     it 'allows overriding the dependency with a class' do
       expect(subject.new(counter: OverridenCounter).call).to eq('Somedep -> 2, Anotherdep -> 4')
     end
+
+    it 'passes dependencies to class overrides' do
+      expect(subject.new(somedep: ClassyDep).call).to eq('Automatically instantiated: 1, Anotherdep -> 2')
+    end
   end
 
   context 'with block dependencies that take dependencies' do

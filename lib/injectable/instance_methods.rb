@@ -58,8 +58,10 @@ module Injectable
       self.class.dependencies.names.each do |name|
         next if self.class.initialize_arguments.key?(name)
         next unless args.key?(name)
+        next instance_variable_set("@#{name}", args[name]) unless args[name].respond_to?(:new)
+        next instance_variable_set("@#{name}", args[name].new) if dependencies_of(name).empty?
 
-        instance_variable_set("@#{name}", args[name].respond_to?(:new) ? args[name].new : args[name]) 
+        instance_variable_set("@#{name}",  args[name].new(memoized_dependencies_of(name))) 
       end
     end
   end

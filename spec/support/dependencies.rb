@@ -100,6 +100,16 @@ class Somedep
   end
 end
 
+class ClassyDep
+  include Injectable
+
+  dependency :counter
+
+  def call
+    "Automatically instantiated: #{counter.count}"
+  end
+end
+
 class OverridenCounter
   def initialize
     @count = 0
