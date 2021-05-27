@@ -56,9 +56,24 @@ describe Injectable do
       expect(subject.call).to eq 'Some third party lib'
     end
 
-    it 'allows overriding dependencies' do
+    it 'allows overriding dependencies with a callable' do
       instance = subject.new(third_party: 'Override')
       expect(instance.call).to eq 'Override'
+    end
+
+    it 'allows overriding dependencies with classes' do
+      klass = Class.new do
+        def initialize
+          @initialised = 'initialised'
+        end
+
+        def to_s
+          @initialised
+        end
+      end
+
+      instance = subject.new(third_party: klass)
+      expect(instance.call.to_s).to eq 'initialised'
     end
   end
 
@@ -480,6 +495,18 @@ describe Injectable do
 
     it 'shares dependency instances' do
       expect(subject.call).to eq 'Somedep -> 1, Anotherdep -> 2'
+    end
+
+    it 'allows overriding the dependency with an instance' do
+      expect(subject.new(counter: OverridenCounter.new).call).to eq('Somedep -> 2, Anotherdep -> 4')
+    end
+
+    it 'allows overriding the dependency with a class' do
+      expect(subject.new(counter: OverridenCounter).call).to eq('Somedep -> 2, Anotherdep -> 4')
+    end
+
+    it 'passes dependencies to class overrides' do
+      expect(subject.new(somedep: ClassyDep).call).to eq('Automatically instantiated: 1, Anotherdep -> 2')
     end
   end
 

@@ -20,6 +20,21 @@ module Injectable
 
     private
 
+    def instantiate_dependency(name)
+      deps = self.class.dependencies
+      deps[name].instance(args: memoized_dependencies_of(name), namespace: deps.namespace)
+    end
+
+    def memoized_dependencies_of(name)
+      return [] if dependencies_of(name).empty?
+
+      dependencies_of(name).each_with_object({}) { |dep, hash| hash[dep] = public_send(dep) }
+    end
+
+    def dependencies_of(name)
+      self.class.dependencies[name].depends_on
+    end
+
     def check_call_definition!
       return if (self.class.ancestors - [Injectable::InstanceMethods]).any? do |ancestor|
         ancestor.instance_methods(false).include?(:call)
@@ -42,12 +57,12 @@ module Injectable
     def variables_from_dependencies!(args)
       self.class.dependencies.names.each do |name|
         next if self.class.initialize_arguments.key?(name)
-        instance_variable_set("@#{name}", args[name]) if args.key?(name)
-      end
-    end
+        next unless args.key?(name)
+        next instance_variable_set("@#{name}", args[name]) unless args[name].respond_to?(:new)
+        next instance_variable_set("@#{name}", args[name].new) if dependencies_of(name).empty?
 
-    def dependencies_proxy
-      @dependencies_proxy ||= self.class.dependencies.proxy
+        instance_variable_set("@#{name}", args[name].new(memoized_dependencies_of(name)))
+      end
     end
   end
 end
