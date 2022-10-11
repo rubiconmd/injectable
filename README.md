@@ -4,7 +4,7 @@
 
 `Injectable` is an opinionated and declarative [Dependency Injection](https://en.wikipedia.org/wiki/Dependency_injection) library for ruby.
 
-It is being used in production (under ruby 2.5.1) in [RubiconMD](https://github.com/rubiconmd) and was extracted from its codebase.
+It is being used in production (under ruby 2.7.6) in [RubiconMD](https://github.com/rubiconmd) and was extracted from its codebase.
 
 ## Installation
 
