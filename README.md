@@ -4,7 +4,7 @@
 
 `Injectable` is an opinionated and declarative [Dependency Injection](https://en.wikipedia.org/wiki/Dependency_injection) library for ruby.
 
-It is being used in production (under ruby 2.5.1) in [RubiconMD](https://github.com/rubiconmd) and was extracted from its codebase.
+It is being used in production (under ruby 3.1) in [RubiconMD](https://github.com/rubiconmd) and was extracted from its codebase.
 
 ## Installation
 
@@ -338,6 +338,8 @@ If you don't pass the `:default` option the argument will be required.
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+
+Please consider configuring [https://editorconfig.org/] on your favourite IDE/editor, so basic file formatting is consistent and avoids cross-platform issues. Some editors require [a plugin](https://editorconfig.org/#download), meanwhile others have it [pre-installed](https://editorconfig.org/#pre-installed).
 
 ## Contributing
 
