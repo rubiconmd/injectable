@@ -35,11 +35,11 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler (~> 2.2)
+  bundler (~> 2.4)
   injectable!
   pry-byebug
   rake (~> 13.0)
   rspec (~> 3.11)
 
 BUNDLED WITH
-   2.2.4
+   2.4.6
