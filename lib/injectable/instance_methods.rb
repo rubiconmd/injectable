@@ -8,24 +8,7 @@ module Injectable
       super()
     end
 
-    # Entry point of the service.
-    # Arguments for this method should be declared explicitly with '.argument'
-    # and declare this method without arguments
-    def call(args = {})
-      check_call_definition!
-      check_missing_arguments!(self.class.required_call_arguments, args)
-      variables_for!(self.class.call_arguments, args)
-      super()
-    end
-
     private
-
-    def check_call_definition!
-      return if (self.class.ancestors - [Injectable::InstanceMethods]).any? do |ancestor|
-        ancestor.instance_methods(false).include?(:call)
-      end
-      raise NoMethodError, "A #call method with zero arity must be defined in #{self.class}"
-    end
 
     def check_missing_arguments!(expected, args)
       missing = expected - args.keys

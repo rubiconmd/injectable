@@ -4,20 +4,27 @@ require_relative 'support/dependencies'
 describe Injectable do
   context 'without defined #call' do
     subject do
+      Age = Class.new do
+        include Injectable
+
+        def get_age
+          999
+        end
+      end
+
       Class.new do
         include Injectable
 
-        def self.to_s
-          'MyFancyClass'
+        dependency :age
+
+        def my_call(name:)
+          [name, age.get_age]
         end
       end
     end
 
-    it 'raises an explicit error when using #call' do
-      expect { subject.call }.to raise_error(
-        NoMethodError,
-        'A #call method with zero arity must be defined in MyFancyClass'
-      )
+    it "allows custom call methods" do
+      expect(subject.new.my_call(name: "Andrew")).to eq(["Andrew", 999])
     end
   end
 
@@ -405,9 +412,7 @@ describe Injectable do
       Class.new do
         include Injectable
 
-        argument :user_id
-
-        def call
+        def call(user_id:)
           "Value was #{user_id}"
         end
       end
@@ -419,8 +424,7 @@ describe Injectable do
 
     it 'requires them' do
       expect { subject.call }.to raise_error(
-        ArgumentError,
-        'missing keywords: user_id'
+        ArgumentError
       )
     end
   end
@@ -430,9 +434,7 @@ describe Injectable do
       Class.new do
         include Injectable
 
-        argument :status, default: 'standby'
-
-        def call
+        def call(status: "standby")
           "Value is #{status}"
         end
       end
@@ -500,9 +502,7 @@ describe Injectable do
           'this comes from parent'
         end
 
-        argument :parent_arg
-
-        def call
+        def call(parent_arg:)
           "Returning #{parent_dep} and #{parent_arg}"
         end
       end
@@ -533,7 +533,6 @@ describe Injectable do
 
       let(:sibling) do
         Sibling = Class.new(parent) do
-          argument :required
         end
       end
 
