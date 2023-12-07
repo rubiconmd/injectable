@@ -32,6 +32,7 @@ module Injectable
       args.is_a?(Array) ? args.clone : [args]
     end
 
+    ### ???
     def wrap_call(the_instance)
       return the_instance unless call
 
@@ -43,8 +44,6 @@ module Injectable
     end
 
     def build_instance(args, kwargs, namespace:)
-      return build_instance_26(args, kwargs, namespace: namespace) if RUBY_VERSION < '2.7'
-
       instantiator = block || klass(namespace: namespace).method(:new)
       if kwargs.empty?
         # otherwise an empty hash will be added in ruby 2.7, which could be taken as
@@ -65,12 +64,6 @@ module Injectable
 
     def camelcased
       @camelcased ||= name.to_s.split('_').map(&:capitalize).join
-    end
-
-    def build_instance_26(args, kwargs, namespace:)
-      args << kwargs if kwargs.any?
-
-      block.nil? ? klass(namespace: namespace).new(*args) : block.call(*args)
     end
   end
 end

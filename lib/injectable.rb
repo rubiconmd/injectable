@@ -12,49 +12,30 @@ require 'injectable/method_already_exists_exception'
 # @example
 #   You would create a service like this:
 #
-#   class AddPlayerToTeamRoster
+#   class MyPack::Commands::AddPlayerToTeamRoster
 #     include Injectable
 #
-#     dependency :team_query
-#     dependency :player_query, class: UserQuery
+#     dependency :team_repo, class: Repositories::TeamRepo
+#     dependency :player_repo, class: Repositories::PlayerRepo
 #
-#     argument :team_id
-#     argument :player_id
+#     def call(team_id:, player_id:)
+#       team = team_repo.get!(team_id)
+#       player = player_repo.get!(player_id)
 #
-#     def call
-#       player_must_exist!
-#       team_must_exist!
-#       team_must_accept_players!
-#
-#       team.add_to_roster(player)
+#       team_must_accept_players(team)
+#       team_repo.add_to_roster!(team, player)
 #     end
 #
 #     private
 #
-#     def player
-#       @player ||= player_query.call(player_id)
-#     end
-#
-#     def team
-#       @team ||= team_query.call(team_id)
-#     end
-#
-#     def player_must_exist!
-#       player.present? || raise UserNotFoundException
-#     end
-#
-#     def team_must_exist!
-#       team.present? || raise TeamNotFoundException
-#     end
-#
-#     def team_must_accept_players!
-#       team.accepts_players? || raise TeamFullException
+#     def team_must_accept_players(team)
+#       team.accepts_players? || raise Errors::TeamFullError
 #     end
 #   end
 #
 #   And use it like this:
 #
-#   AddPlayerToTeamRoster.call(player_id: player.id, team_id: team.id)
+#   AddPlayerToTeamRoster.call(player_id: "PLAYER_UUID", team_id: "TEAM_UUID")
 module Injectable
   def self.included(base)
     base.extend(Injectable::ClassMethods)
