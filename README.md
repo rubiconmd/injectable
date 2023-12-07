@@ -112,18 +112,13 @@ class PdfGenerator
 
   dependency :wicked_pdf
 
-  argument :html
-  argument :render_footer, default: false
-
-  def call
+  def call(html:)
     wicked_pdf.pdf_from_string(html, options)
   end
 
   private
 
   def options
-    return {} unless render_footer
-
     {
       footer: {
         left: footer,
@@ -146,31 +141,7 @@ PdfGenerator.new(wicked_pdf: wicked_pdf_replacement).call(html: '<some html>')
 
 In order to understand how (and why) `Injectable` works, you need to know some principles.
 
-### #1 The `#call` method
-
-`Injectable` classes **must define a public `#call` method that takes no arguments**.
-
-This is **the only public method** you will be defining in your `Injectable` classes.
-
-```rb
-# Correct ✅
-def call
-  # do stuff
-end
-
-# Wrong ❗️
-def call(some_argument)
-  # won't work and will raise an exception at runtime
-end
-```
-
-If you want your `#call` method to receive arguments, that's what the `#argument` macro is for. BTW, we call those **runtime arguments**.
-
-Why `#call`?
-
-Because it's a ruby idiom. Many things in ruby are `callable`, like lambdas.
-
-### #2 The `initialize` method
+### #1 The `initialize` method
 
 Injectable classes take their **dependencies as keyword arguments** on the `initialize` method. They can also take **configuration arguments** on `initialize`:
 
@@ -321,17 +292,6 @@ initialize_with :debug, default: false
 ```
 
 If you don't pass the `:default` option the argument will be required.
-
-## `#argument` macro
-
-`#argument` allows you to define **runtime arguments** passed to `#call`
-
-```rb
-argument :browser, default: 'Unknown'
-```
-
-If you don't pass the `:default` option the argument will be required.
-
 
 ## Development
 
